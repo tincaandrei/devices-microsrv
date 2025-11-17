@@ -1,0 +1,249 @@
+/* Landing page wrapper */
+ .landing-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #004e92 0%, #00c853 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.landing-container {
+  width: 100%;
+  max-width: 980px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  padding: 24px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.landing-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.landing-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.landing-role-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.landing-subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.landing-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 2fr);
+  gap: 18px;
+}
+
+.landing-section {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px 16px 14px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.landing-section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.landing-section-description {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.landing-error-message {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+/* Devices list */
+.landing-devices-empty {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.landing-devices-list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.landing-device-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.landing-device-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.landing-device-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111827;
+}
+
+.landing-device-consumption {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.landing-device-remove {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: #ef4444;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.landing-device-remove:hover {
+  background: #dc2626;
+}
+
+/* Form */
+.landing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.landing-subsection-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.landing-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.landing-form-field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.landing-form-field input,
+.landing-form-field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.9rem;
+  outline: none;
+  resize: vertical;
+  min-height: 36px;
+}
+
+.landing-form-field input:focus,
+.landing-form-field textarea:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.landing-form-submit {
+  margin-top: 4px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.landing-form-submit:hover {
+  filter: brightness(1.04);
+}
+
+/* User details */
+.landing-user-details {
+  margin: 0;
+  padding: 0;
+}
+
+.landing-user-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.landing-user-row:last-child {
+  border-bottom: none;
+}
+
+.landing-user-row dt {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.landing-user-row dd {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .landing-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-container {
+    padding: 18px 16px 16px;
+  }
+
+  .landing-title {
+    font-size: 1.5rem;
+  }
+}

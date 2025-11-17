@@ -1,0 +1,29 @@
+﻿@startuml DeploymentDiagram
+skinparam componentStyle rectangle
+actor Client
+node Traefik {
+    component "Traefik Router" as TraefikGW
+}
+node "Docker Host" {
+    node "Auth Service" as Auth {
+        component "Spring Boot" as AuthApp
+    }
+    node "User Service" as User {
+        component "Spring Boot" as UserApp
+    }
+    node "Device Service" as Device {
+        component "Spring Boot" as DeviceApp
+    }
+}
+database "Auth PostgreSQL" as AuthDB
+database "User PostgreSQL" as UserDB
+database "Device PostgreSQL" as DeviceDB
+Client --> TraefikGW : HTTPS + JWT
+TraefikGW --> AuthApp : /auth
+TraefikGW --> UserApp : /users
+TraefikGW --> DeviceApp : /devices
+AuthApp --> AuthDB
+UserApp --> UserDB
+DeviceApp --> DeviceDB
+UserApp --> DeviceApp : REST (device lookups)
+@enduml

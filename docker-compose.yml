@@ -1,0 +1,157 @@
+﻿services:
+  traefik:
+    image: traefik:v3.1
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.jwt-auth.forwardauth.address=http://auth-service:8081/auth/validate"
+      - "traefik.http.middlewares.jwt-auth.forwardauth.authRequestHeaders=Authorization"
+      - "traefik.http.middlewares.jwt-auth.forwardauth.authResponseHeaders=X-User,X-Role,X-User-Id"
+      - "traefik.http.middlewares.jwt-auth.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowOriginList=*"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowMethods=*"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowHeaders=*"
+      - "traefik.http.middlewares.cors.headers.accessControlAllowCredentials=true"
+      - "traefik.http.middlewares.cors.headers.addVaryHeader=true"
+    networks:
+      - ems-net
+
+  auth-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - ems-net
+
+  user-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - ems-net
+
+  device-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: device_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - device-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - ems-net
+
+  auth-service:
+    build: ./auth-service
+    depends_on:
+      - auth-db
+    restart: on-failure
+    environment:
+      DB_HOST: auth-db
+      DB_PORT: 5432
+      DB_NAME: auth_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      USER_SERVICE_URL: http://user-service:8082
+      JWT_SECRET: 9f3c8a7e2d1b44c09e5a3fd82176bc54f2a18d7cc4e9b0a3f1d24e8c7b5a9031
+      JWT_EXPIRATION: 3600000
+      PORT: 8081
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth.entrypoints=web"
+      - "traefik.http.routers.auth.middlewares=cors"
+      - "traefik.http.services.auth.loadbalancer.server.port=8081"
+      - "traefik.http.routers.auth-options.rule=Method(`OPTIONS`) && PathPrefix(`/auth`)"
+      - "traefik.http.routers.auth-options.entrypoints=web"
+      - "traefik.http.routers.auth-options.service=auth"
+      - "traefik.http.routers.auth-options.middlewares=cors"
+      - "traefik.http.routers.auth-options.priority=100"
+    networks:
+      - ems-net
+
+  user-service:
+    build: ./user-service
+    depends_on:
+      - user-db
+      - device-service
+    restart: on-failure
+    environment:
+      DB_HOST: user-db
+      DB_PORT: 5432
+      DB_NAME: user_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DEVICE_SERVICE_URL: http://device-service:8083
+      PORT: 8082
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=PathPrefix(`/users`)"
+      - "traefik.http.routers.user.entrypoints=web"
+      - "traefik.http.routers.user.middlewares=cors,jwt-auth"
+      - "traefik.http.services.user.loadbalancer.server.port=8082"
+      - "traefik.http.routers.user-options.rule=Method(`OPTIONS`) && PathPrefix(`/users`)"
+      - "traefik.http.routers.user-options.entrypoints=web"
+      - "traefik.http.routers.user-options.service=user"
+      - "traefik.http.routers.user-options.middlewares=cors"
+      - "traefik.http.routers.user-options.priority=100"
+    networks:
+      - ems-net
+
+  device-service:
+    build: ./device-service
+    depends_on:
+      - device-db
+    restart: on-failure
+    environment:
+      DB_HOST: device-db
+      DB_PORT: 5432
+      DB_NAME: device_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      PORT: 8083
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.device.rule=PathPrefix(`/devices`)"
+      - "traefik.http.routers.device.entrypoints=web"
+      - "traefik.http.routers.device.middlewares=cors,jwt-auth"
+      - "traefik.http.services.device.loadbalancer.server.port=8083"
+      - "traefik.http.routers.device-options.rule=Method(`OPTIONS`) && PathPrefix(`/devices`)"
+      - "traefik.http.routers.device-options.entrypoints=web"
+      - "traefik.http.routers.device-options.service=device"
+      - "traefik.http.routers.device-options.middlewares=cors"
+      - "traefik.http.routers.device-options.priority=100"
+    networks:
+      - ems-net
+
+networks:
+  ems-net:
+    driver: bridge
+
+volumes:
+  auth-db-data:
+  user-db-data:
+  device-db-data:
